@@ -61,3 +61,59 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter
 .cp-sw{aspect-ratio:1;border-radius:8px;box-shadow:inset 0 0 0 1px rgb(0 0 0 / .14);transition:transform .1s}
 .cp-sw:hover{transform:scale(1.1)}
 .cp-sw.on{box-shadow:inset 0 0 0 1px rgb(0 0 0 / .14),0 0 0 2px rgb(var(--c-panel)),0 0 0 4px rgb(var(--c-accent))}
+
+/* ===== Bar alat melayang (bar2) =====
+   Slab tinta + lensa aksen yang meluncur ke alat aktif. Selektor diawali #root
+   agar menang atas aturan lama (html.tablet nav[aria-label=Alat], .tb-wrap, .tb-nav). */
+#root .tb-wrap{padding:8px 12px max(22px,calc(env(safe-area-inset-bottom,0px) + 10px))}
+.tb-stage{position:relative;display:flex;min-width:0;max-width:100%;justify-content:center;animation:tb-rise .55s cubic-bezier(.2,.9,.25,1) backwards}
+#root .tb-wrap .tb-nav{--tb-bg:24 24 27;--tb-fg:250 250 250;--tb-dim:161 161 170;--tb-hov:255 255 255 / .08;--tb-line:255 255 255 / .14;position:relative;display:block;min-width:0;max-width:100%;min-height:0;gap:0;padding:5px;border-radius:21px;border:1px solid rgb(255 255 255 / .07);background:rgb(var(--tb-bg));color:rgb(var(--tb-fg));box-shadow:0 1px 1px rgb(0 0 0 / .22),0 3px 8px -2px rgb(0 0 0 / .2),0 24px 40px -18px rgb(24 24 27 / .6)}
+.dark #root .tb-wrap .tb-nav,.dark .tb-wrap .tb-nav{--tb-bg:36 36 42;border-color:rgb(255 255 255 / .1);box-shadow:0 1px 1px rgb(0 0 0 / .4),0 3px 8px -2px rgb(0 0 0 / .4),0 24px 40px -18px rgb(0 0 0 / .85)}
+.tb-rail{position:relative;display:flex;align-items:stretch;gap:2px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:none;scroll-snap-type:x proximity}
+.tb-rail::-webkit-scrollbar{display:none}
+.tb-rail[data-fl="1"]{-webkit-mask-image:linear-gradient(90deg,transparent,#000 26px);mask-image:linear-gradient(90deg,transparent,#000 26px)}
+.tb-rail[data-fr="1"]{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+.tb-rail[data-fl="1"][data-fr="1"]{-webkit-mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent)}
+.tb-lens{position:absolute;left:0;top:0;z-index:0;width:var(--lw,0px);height:var(--lh,0px);border-radius:16px;background:rgb(var(--c-accent));box-shadow:inset 0 1px 0 rgb(255 255 255 / .24),inset 0 -1px 0 rgb(0 0 0 / .12);transform:translate(var(--lx,0px),var(--ly,0px));opacity:0;pointer-events:none}
+.tb-rail[data-lens="1"] .tb-lens{opacity:1}
+.tb-rail[data-ready="1"] .tb-lens{transition:transform .46s cubic-bezier(.34,1.36,.5,1),width .34s cubic-bezier(.3,1,.4,1),height .28s ease,opacity .2s}
+.tb-itm{position:relative;z-index:1;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:76px;height:52px;padding:0;border:0;border-radius:16px;background:transparent;color:rgb(var(--tb-dim));font-size:11.5px;line-height:1;font-weight:500;white-space:nowrap;cursor:pointer;scroll-snap-align:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:color .18s,background-color .18s,opacity .18s}
+.tb-itm svg{flex:none;width:20px;height:20px;transition:scale .18s cubic-bezier(.3,1.4,.5,1)}
+.tb-itm:active svg{scale:.86}
+.tb-itm[aria-pressed="true"]{color:rgb(var(--c-on-accent));font-weight:600}
+.tb-itm[aria-pressed="true"] svg{animation:tb-tick .5s cubic-bezier(.3,1.5,.5,1)}
+.tb-itm[data-dim="1"]{opacity:.45}
+.tb-itm:focus-visible{outline:2px solid rgb(var(--tb-fg));outline-offset:-2px}
+.tb-itm[aria-pressed="true"]:focus-visible{outline-color:rgb(var(--c-on-accent))}
+@media (hover:hover){
+  .tb-itm:hover{background:rgb(var(--tb-hov));color:rgb(var(--tb-fg))}
+  .tb-itm[data-dim="1"]:hover{opacity:.75}
+  .tb-itm[aria-pressed="true"]:hover{background:transparent;color:rgb(var(--c-on-accent))}
+}
+.tb-div{flex:none;align-self:center;width:1px;height:26px;margin:0 6px;border-radius:1px;background:rgb(var(--tb-line))}
+.tb-tip{position:absolute;left:50%;bottom:calc(100% + 12px);z-index:2;display:flex;align-items:baseline;gap:8px;max-width:min(520px,calc(100vw - 24px));padding:8px 13px;border-radius:12px;border:1px solid rgb(var(--c-border));background:rgb(var(--c-panel));color:rgb(var(--c-text));box-shadow:0 8px 22px -10px rgb(0 0 0 / .35);font-size:12px;line-height:16px;white-space:nowrap;pointer-events:none;opacity:0;translate:-50% 6px;transition:opacity .14s,translate .14s}
+.tb-tip[data-on="1"]{opacity:1;translate:-50% 0;transition:opacity .18s .2s,translate .22s cubic-bezier(.2,.9,.3,1) .2s}
+.tb-tip b{font-weight:600}
+.tb-tip span{min-width:0;overflow:hidden;text-overflow:ellipsis;color:rgb(var(--c-muted))}
+@media (hover:none),(max-width:767px){.tb-tip{display:none}}
+@media (max-width:767px){
+  #root .tb-wrap{padding:6px 10px max(14px,calc(env(safe-area-inset-bottom,0px) + 6px))}
+  .tb-stage{width:100%}
+  #root .tb-wrap .tb-nav{width:100%;padding:5px;border-radius:22px}
+  .tb-itm{flex:1 0 auto;width:auto;min-width:60px;padding:0 6px}
+  .tb-div{margin:0 3px}
+  .tb-nav[data-compact="1"] .tb-itm{flex:1 1 0;min-width:36px;height:44px;padding:0}
+  .tb-nav[data-compact="1"] .tb-lab{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
+@keyframes tb-rise{from{opacity:0;translate:0 18px}to{opacity:1;translate:0 0}}
+@keyframes tb-tick{0%{scale:.7;rotate:-14deg}55%{scale:1.14;rotate:3deg}100%{scale:1;rotate:0deg}}
+@media (prefers-reduced-motion:reduce){
+  .tb-stage{animation:none}
+  .tb-lens,.tb-tip,.tb-itm,.tb-itm svg{transition:none!important}
+  .tb-itm[aria-pressed="true"] svg{animation:none}
+}
+
+/* Header sempit: di bawah 360px nama aplikasi disembunyikan agar tombol Ekspor tidak terpotong */
+@media (max-width:359px){
+  header>div:first-child>span:nth-child(2){display:none}
+}
