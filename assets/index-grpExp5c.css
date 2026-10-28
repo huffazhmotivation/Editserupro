@@ -9,3 +9,4 @@
 .tb-wrap .tb-ed{width:60px;flex:0 0 auto}
 .tb-wrap .tb-sep{width:1px;align-self:stretch;margin:12px 5px;background:rgb(var(--c-border));flex:none}
 @media (max-width:767px){.tb-wrap .tb-ed{width:46px}.tb-wrap .tb-sep{margin:10px 2px}}
+@media (min-width:768px){.tb-wrap{background:rgb(var(--c-canvas))}}
