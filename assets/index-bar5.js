@@ -282,12 +282,13 @@ function $bItems(){
     items.push({id,node:nd,item:it,style:st})}
   return{items,bad}}
 function $bool(op,keep){
-  keep=keep||op!=="unite";
   const n=R(),{items,bad}=$bItems();
   if(items.length<2){Mt(bad?"Boolean hanya untuk bentuk vektor yang punya isi. Ubah teks ke kurva dulu (Ctrl+Shift+O)":"Pilih minimal dua objek","err");return}
   const ne=r=>!!r&&qI(r).length>0,fold=(a,f)=>a.reduce((x,y)=>x?f(x,y):y,null);
   const U=(a,b)=>a.unite(b,{insert:!1}),S=(a,b)=>a.subtract(b,{insert:!1}),I=(a,b)=>a.intersect(b,{insert:!1}),X=(a,b)=>a.exclude(b,{insert:!1});
   const top=items[items.length-1],bot=items[0],out=[];let removeIds=items.map(i=>i.id);
+  const cutIds=op==="subtract"?items.slice(1).map(i=>i.id):op==="subtractBack"?items.slice(0,-1).map(i=>i.id):(op==="intersect"||op==="crop")?[top.id]:[];
+  removeIds=removeIds.filter(x=>!cutIds.includes(x));const anc=items.filter(i=>removeIds.includes(i.id)).pop()||top;
   const label=($BOOL.find(b=>b[0]===op)||[0,op])[1];
   try{switch(op){
     case"unite":out.push({item:fold(items.map(i=>i.item),U),style:top.style,name:"Gabungan"});break;
@@ -316,23 +317,24 @@ function $bool(op,keep){
   if(!res.length){Mt(op==="intersect"||op==="crop"?"Tidak ada area yang tumpang tindih":"Hasil boolean kosong","err");return}
   const made=[];
   n.mutate("Boolean: "+label,d=>{
-    const pid=top.node.parentId||null;let idx=an(d,pid).indexOf(top.id)+1;
+    const pid=anc.node.parentId||null;let idx=an(d,pid).indexOf(anc.id)+1;
     for(const o of res){if(o.item.reorient)o.item.reorient(!0,!0);const nd=X1(qI(o.item),o.style,o.name,"nonzero");if(!nd)continue;Xt(d,nd,pid,idx++);made.push(nd.id)}
     if(!keep)fs(d,removeIds);
     Ht(d,made.filter(u=>d.nodes[u]))});
   const ok=made.filter(u=>R().doc.nodes[u]);n.select(ok);
-  Mt(`${label}: ${ok.length} bentuk${keep?" (objek asli dipertahankan)":""}`)}
+  Mt(`${label}: ${ok.length} bentuk${cutIds.length?" (objek pengiris dipertahankan)":""}`)}
 function $BoolMenu({pos,vp,close}){
   const up=pos.top>vp.h*.55;
   return T.jsxs("div",{className:"chip-pill absolute z-30",style:{left:"50%",transform:"translateX(-50%)",...(up?{bottom:"calc(100% + 6px)"}:{top:"calc(100% + 6px)"}),flexDirection:"column",alignItems:"stretch",gap:2,padding:4,minWidth:190,background:"rgb(var(--c-panel))"},onPointerDown:e=>e.stopPropagation(),children:[
     ...$BOOL.map(b=>T.jsx("button",{className:"chip-btn",style:{justifyContent:"flex-start",width:"100%",whiteSpace:"nowrap"},title:b[2],onClick:()=>{close();$bool(b[0])},children:[$icon(b[0]),b[1]]},b[0])),
-    T.jsx("div",{style:{fontSize:10,opacity:.55,padding:"2px 8px 0"},children:"Selain Gabung, objek asli tetap dipertahankan"})]})}
+    T.jsx("div",{style:{fontSize:10,opacity:.55,padding:"2px 8px 0"},children:"Objek pengiris tetap dipertahankan"})]})}
 
 /* ===== EditSeru patch: panel layer di kiri ===== */
 function $LayerPanel(){
   const doc=ct(s=>s.doc),sel=ct(s=>s.selection),open=ct(s=>s.layersOpen);
-  const[col,setCol]=tt.useState(()=>new Set),[ren,setRen]=tt.useState(null),[drag,setDrag]=tt.useState(null),[over,setOver]=tt.useState(null);
+  const lsRef=tt.useRef(null),[lsH,setLsH]=tt.useState(null),[col,setCol]=tt.useState(()=>new Set),[ren,setRen]=tt.useState(null),[drag,setDrag]=tt.useState(null),[over,setOver]=tt.useState(null);
   tt.useEffect(()=>{try{window.matchMedia("(max-width:767px)").matches&&R().set({layersOpen:!1})}catch{}},[]);
+  tt.useLayoutEffect(()=>{const f=()=>{const e=lsRef.current;if(!e)return;if(window.matchMedia("(max-width:767px)").matches){setLsH(null);return}const t=e.getBoundingClientRect().top;setLsH(Math.max(120,window.innerHeight-t))};f();window.addEventListener("resize",f);const id=setTimeout(f,300);return()=>{window.removeEventListener("resize",f);clearTimeout(id)}},[open]);
   const selSet=new Set(sel);
   const pick=(e,id)=>{const s=R().selection;e.shiftKey||e.ctrlKey||e.metaKey?R().select(s.includes(id)?s.filter(x=>x!==id):[...s,id]):R().select([id])};
   const setProp=(id,k)=>{const nd=R().doc.nodes[id];if(!nd)return;R().mutate(k==="visible"?"Tampilkan/sembunyikan":"Kunci",d=>{const x=d.nodes[id];d.nodes[id]={...x,[k]:k==="visible"?x.visible===!1:!x.locked}})};
@@ -344,8 +346,8 @@ function $LayerPanel(){
   const glyph={group:"▣",frame:"#",compound:"◈",text:"T",image:"▨",instance:"❖"};
   const toggle=()=>R().set({layersOpen:!open});
   if(!open)return T.jsx("button",{className:"ls-layers-tab",title:"Buka panel layer",onClick:toggle,children:T.jsxs("svg",{width:16,height:16,viewBox:"0 0 16 16",fill:"none",stroke:"currentColor",strokeWidth:1.4,strokeLinejoin:"round",children:[T.jsx("path",{d:"M8 2 14 5.5 8 9 2 5.5z"},"a"),T.jsx("path",{d:"M2 8.5 8 12l6-3.5"},"b"),T.jsx("path",{d:"M2 11.5 8 15l6-3.5",opacity:.5},"c")]})});
-  return T.jsxs("aside",{className:"ls-layers","aria-label":"Panel layer",onContextMenu:e=>e.preventDefault(),children:[
-    T.jsxs("div",{className:"ls-head",children:[T.jsx("span",{children:"Layer"}),T.jsx("span",{className:"ls-count",children:rows.length}),T.jsx("button",{className:"ls-ico",title:"Tutup panel layer","aria-label":"Tutup panel layer",onClick:toggle,children:"✕"})]}),
+  return T.jsxs("aside",{ref:lsRef,style:lsH?{height:lsH,alignSelf:"flex-start"}:void 0,className:"ls-layers","aria-label":"Panel layer",onContextMenu:e=>e.preventDefault(),children:[
+    T.jsxs("div",{className:"ls-head",children:[T.jsx("span",{children:"Layer"}),T.jsx("span",{className:"ls-count",children:rows.length}),T.jsx("button",{className:"ls-ico",title:"Tutup panel layer","aria-label":"Tutup panel layer",onClick:toggle,children:T.jsx("svg",{width:12,height:12,viewBox:"0 0 16 16",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",children:T.jsx("path",{d:"M3.5 3.5l9 9M12.5 3.5l-9 9"})})})]}),
     T.jsxs("div",{className:"ls-list",onPointerDown:e=>{e.target===e.currentTarget&&R().select([])},children:[
       rows.length===0&&T.jsx("div",{className:"ls-empty",children:"Belum ada objek"}),
       rows.map(({id,nd,depth,cont,isCol})=>{
@@ -357,11 +359,11 @@ function $LayerPanel(){
           onDrop:e=>{e.preventDefault();drop(id,over&&over.id===id?over.pos:"above")},
           onClick:e=>pick(e,id),onDoubleClick:()=>setRen(id),
           children:[
-            cont?T.jsx("button",{className:"ls-ico ls-chev","aria-label":isCol?"Buka":"Ciutkan",onClick:e=>{e.stopPropagation();setCol(s=>{const n=new Set(s);n.has(id)?n.delete(id):n.add(id);return n})},children:isCol?"▸":"▾"}):T.jsx("span",{className:"ls-chev-sp"}),
+            cont?T.jsx("button",{className:"ls-ico ls-chev","aria-label":isCol?"Buka":"Ciutkan",onClick:e=>{e.stopPropagation();setCol(s=>{const n=new Set(s);n.has(id)?n.delete(id):n.add(id);return n})},children:T.jsx("svg",{width:10,height:10,viewBox:"0 0 16 16",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round",children:T.jsx("path",{d:isCol?"M6 3l5 5-5 5":"M3 6l5 5 5-5"})})}):T.jsx("span",{className:"ls-chev-sp"}),
             T.jsx("span",{className:"ls-glyph",children:glyph[nd.type]||"◇"}),
             ren===id?T.jsx("input",{className:"ls-input",autoFocus:!0,defaultValue:nd.name||"",onClick:e=>e.stopPropagation(),onDoubleClick:e=>e.stopPropagation(),onKeyDown:e=>{e.stopPropagation();e.key==="Enter"&&commit(id,e.currentTarget.value);e.key==="Escape"&&setRen(null)},onBlur:e=>commit(id,e.currentTarget.value)}):T.jsx("span",{className:"ls-name",title:nd.name||"",children:nd.name||nd.type}),
-            T.jsx("button",{className:"ls-ico"+(nd.locked?" act":""),title:nd.locked?"Buka kunci":"Kunci","aria-label":"Kunci",onClick:e=>{e.stopPropagation();setProp(id,"locked")},children:nd.locked?"🔒":"🔓"}),
-            T.jsx("button",{className:"ls-ico"+(hid?" act":""),title:hid?"Tampilkan":"Sembunyikan","aria-label":"Tampilkan/sembunyikan",onClick:e=>{e.stopPropagation();setProp(id,"visible")},children:hid?"◌":"●"})]})})]}),
+            T.jsx("button",{className:"ls-ico lk"+(nd.locked?" act":""),title:nd.locked?"Buka kunci":"Kunci","aria-label":"Kunci",onClick:e=>{e.stopPropagation();setProp(id,"locked")},children:T.jsx("svg",{width:14,height:14,viewBox:"0 0 16 16",fill:"none",stroke:"currentColor",strokeWidth:1.3,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":!0,children:!!nd.locked?[T.jsx("rect",{x:3.5,y:7,width:9,height:6.5,rx:1.5},"a"),T.jsx("path",{d:"M5.5 7V5a2.5 2.5 0 0 1 5 0v2"},"b")]:[T.jsx("rect",{x:3.5,y:7,width:9,height:6.5,rx:1.5},"a"),T.jsx("path",{d:"M5.5 7V5a2.5 2.5 0 0 1 4.6-1.3"},"b")]})}),
+            T.jsx("button",{className:"ls-ico ey"+(hid?" act":""),title:hid?"Tampilkan":"Sembunyikan","aria-label":"Tampilkan/sembunyikan",onClick:e=>{e.stopPropagation();setProp(id,"visible")},children:T.jsx("svg",{width:14,height:14,viewBox:"0 0 16 16",fill:"none",stroke:"currentColor",strokeWidth:1.3,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":!0,children:hid?[T.jsx("path",{d:"M2 8s2.2-4 6-4 6 4 6 4-2.2 4-6 4-6-4-6-4z"},"a"),T.jsx("path",{d:"M3 13 13 3"},"b")]:[T.jsx("path",{d:"M2 8s2.2-4 6-4 6 4 6 4-2.2 4-6 4-6-4-6-4z"},"a"),T.jsx("circle",{cx:8,cy:8,r:1.8},"b")]})})]})})]}),
     T.jsx("div",{className:"ls-foot",children:"Seret untuk ubah urutan · klik 2× ganti nama"})]})}
 
 /* ===== EditSeru patch: chip Susun (arrange) ===== */

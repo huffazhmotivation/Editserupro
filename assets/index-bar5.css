@@ -164,3 +164,9 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter
   .ls-layers{position:fixed;left:0;top:96px;bottom:0;width:min(280px,82vw);z-index:60;box-shadow:8px 0 30px -12px rgb(0 0 0/.55)}
   .ls-layers-tab{position:fixed;left:0;top:104px;z-index:60;margin:0}
 }
+
+.ls-ico svg{display:block}
+.ls-ico.lk,.ls-ico.ey{opacity:.55}
+.ls-ico.act{opacity:1}
+.ls-row:not(:hover):not(.on) .ls-ico.lk:not(.act){opacity:.0}
+.ls-row:not(:hover):not(.on) .ls-ico.ey:not(.act){opacity:.35}

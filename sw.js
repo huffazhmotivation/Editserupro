@@ -2,7 +2,7 @@
    - Cangkang aplikasi (HTML/JS/CSS) disimpan saat dipasang → aplikasi terbuka tanpa internet.
    - Mesin & model AI (/ai/) disimpan begitu dipakai (dan disiapkan diam-diam saat senggang) → fitur AI jalan offline.
    - Hanya permintaan same-origin yang ditangani; unduhan model dari luar dikelola aplikasi sendiri. */
-const VERSION = "bar4";
+const VERSION = "bar5";
 const SHELL = 'editseru-shell-' + VERSION;
 const RUNTIME = 'editseru-runtime-v1';
 const PRECACHE = [
@@ -14,8 +14,8 @@ const PRECACHE = [
   "./assets/RasterPanel-DUkDiDvw.js",
   "./assets/UTIF-BNj2SwFb.js",
   "./assets/imagefx.worker-Dj7lAgTH.js",
-  "./assets/index-bar4.js",
-  "./assets/index-bar4.css",
+  "./assets/index-bar5.js",
+  "./assets/index-bar5.css",
   "./assets/index-sL2J13RH.js",
   "./assets/instrument-sans-latin-wdth-normal-BVScPF0l.woff2",
   "./assets/jetbrains-mono-latin-wght-normal-B9CIFXIH.woff2",
