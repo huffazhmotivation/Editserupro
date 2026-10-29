@@ -178,3 +178,5 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter
 @media (min-width:768px){
   #root .tb-wrap{position:fixed;left:0;right:0;bottom:0;background:transparent;z-index:20}
 }
+
+@media (min-width:768px) and (max-width:1199px){.panel-foot{padding-bottom:96px}}
