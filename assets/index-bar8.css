@@ -170,3 +170,11 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter
 .ls-ico.act{opacity:1}
 .ls-row:not(:hover):not(.on) .ls-ico.lk:not(.act){opacity:.0}
 .ls-row:not(:hover):not(.on) .ls-ico.ey:not(.act){opacity:.35}
+
+.ls-wrap{flex:none;width:236px;align-self:stretch;z-index:21}
+@media (max-width:767px){.ls-wrap{width:0;height:0;overflow:visible}}
+
+/* Kanvas penuh sampai bawah: toolbar melayang tanpa strip latar */
+@media (min-width:768px){
+  #root .tb-wrap{position:fixed;left:0;right:0;bottom:0;background:transparent;z-index:20}
+}

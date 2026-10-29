@@ -334,7 +334,7 @@ function $LayerPanel(){
   const doc=ct(s=>s.doc),sel=ct(s=>s.selection),open=ct(s=>s.layersOpen);
   const lsRef=tt.useRef(null),[lsH,setLsH]=tt.useState(null),[col,setCol]=tt.useState(()=>new Set),[ren,setRen]=tt.useState(null),[drag,setDrag]=tt.useState(null),[over,setOver]=tt.useState(null);
   tt.useEffect(()=>{try{window.matchMedia("(max-width:767px)").matches&&R().set({layersOpen:!1})}catch{}},[]);
-  tt.useLayoutEffect(()=>{const f=()=>{const e=lsRef.current;if(!e)return;if(window.matchMedia("(max-width:767px)").matches){setLsH(null);return}const t=e.getBoundingClientRect().top;setLsH(Math.max(120,window.innerHeight-t))};f();window.addEventListener("resize",f);const id=setTimeout(f,300);return()=>{window.removeEventListener("resize",f);clearTimeout(id)}},[open]);
+  tt.useLayoutEffect(()=>{const e=lsRef.current;if(!e)return;const f=()=>{if(window.matchMedia("(max-width:767px)").matches){setLsH(null);return}const t=Math.round(e.getBoundingClientRect().top);setLsH(h=>h===t?h:t)};f();const ro=typeof ResizeObserver<"u"?new ResizeObserver(f):null;ro&&(ro.observe(e),e.parentElement&&ro.observe(e.parentElement));window.addEventListener("resize",f);const id=setInterval(f,500);return()=>{ro&&ro.disconnect();window.removeEventListener("resize",f);clearInterval(id)}},[open]);
   const selSet=new Set(sel);
   const pick=(e,id)=>{const s=R().selection;e.shiftKey||e.ctrlKey||e.metaKey?R().select(s.includes(id)?s.filter(x=>x!==id):[...s,id]):R().select([id])};
   const setProp=(id,k)=>{const nd=R().doc.nodes[id];if(!nd)return;R().mutate(k==="visible"?"Tampilkan/sembunyikan":"Kunci",d=>{const x=d.nodes[id];d.nodes[id]={...x,[k]:k==="visible"?x.visible===!1:!x.locked}})};
@@ -346,7 +346,7 @@ function $LayerPanel(){
   const glyph={group:"▣",frame:"#",compound:"◈",text:"T",image:"▨",instance:"❖"};
   const toggle=()=>R().set({layersOpen:!open});
   if(!open)return T.jsx("button",{className:"ls-layers-tab",title:"Buka panel layer",onClick:toggle,children:T.jsxs("svg",{width:16,height:16,viewBox:"0 0 16 16",fill:"none",stroke:"currentColor",strokeWidth:1.4,strokeLinejoin:"round",children:[T.jsx("path",{d:"M8 2 14 5.5 8 9 2 5.5z"},"a"),T.jsx("path",{d:"M2 8.5 8 12l6-3.5"},"b"),T.jsx("path",{d:"M2 11.5 8 15l6-3.5",opacity:.5},"c")]})});
-  return T.jsxs("aside",{ref:lsRef,style:lsH?{height:lsH,alignSelf:"flex-start"}:void 0,className:"ls-layers","aria-label":"Panel layer",onContextMenu:e=>e.preventDefault(),children:[
+  return T.jsxs("div",{ref:lsRef,className:"ls-wrap",children:[T.jsxs("aside",{style:lsH!=null?{position:"fixed",left:0,top:lsH,bottom:0,height:"auto",zIndex:21}:void 0,className:"ls-layers","aria-label":"Panel layer",onContextMenu:e=>e.preventDefault(),children:[
     T.jsxs("div",{className:"ls-head",children:[T.jsx("span",{children:"Layer"}),T.jsx("span",{className:"ls-count",children:rows.length}),T.jsx("button",{className:"ls-ico",title:"Tutup panel layer","aria-label":"Tutup panel layer",onClick:toggle,children:T.jsx("svg",{width:12,height:12,viewBox:"0 0 16 16",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",children:T.jsx("path",{d:"M3.5 3.5l9 9M12.5 3.5l-9 9"})})})]}),
     T.jsxs("div",{className:"ls-list",onPointerDown:e=>{e.target===e.currentTarget&&R().select([])},children:[
       rows.length===0&&T.jsx("div",{className:"ls-empty",children:"Belum ada objek"}),
@@ -364,7 +364,7 @@ function $LayerPanel(){
             ren===id?T.jsx("input",{className:"ls-input",autoFocus:!0,defaultValue:nd.name||"",onClick:e=>e.stopPropagation(),onDoubleClick:e=>e.stopPropagation(),onKeyDown:e=>{e.stopPropagation();e.key==="Enter"&&commit(id,e.currentTarget.value);e.key==="Escape"&&setRen(null)},onBlur:e=>commit(id,e.currentTarget.value)}):T.jsx("span",{className:"ls-name",title:nd.name||"",children:nd.name||nd.type}),
             T.jsx("button",{className:"ls-ico lk"+(nd.locked?" act":""),title:nd.locked?"Buka kunci":"Kunci","aria-label":"Kunci",onClick:e=>{e.stopPropagation();setProp(id,"locked")},children:T.jsx("svg",{width:14,height:14,viewBox:"0 0 16 16",fill:"none",stroke:"currentColor",strokeWidth:1.3,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":!0,children:!!nd.locked?[T.jsx("rect",{x:3.5,y:7,width:9,height:6.5,rx:1.5},"a"),T.jsx("path",{d:"M5.5 7V5a2.5 2.5 0 0 1 5 0v2"},"b")]:[T.jsx("rect",{x:3.5,y:7,width:9,height:6.5,rx:1.5},"a"),T.jsx("path",{d:"M5.5 7V5a2.5 2.5 0 0 1 4.6-1.3"},"b")]})}),
             T.jsx("button",{className:"ls-ico ey"+(hid?" act":""),title:hid?"Tampilkan":"Sembunyikan","aria-label":"Tampilkan/sembunyikan",onClick:e=>{e.stopPropagation();setProp(id,"visible")},children:T.jsx("svg",{width:14,height:14,viewBox:"0 0 16 16",fill:"none",stroke:"currentColor",strokeWidth:1.3,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":!0,children:hid?[T.jsx("path",{d:"M2 8s2.2-4 6-4 6 4 6 4-2.2 4-6 4-6-4-6-4z"},"a"),T.jsx("path",{d:"M3 13 13 3"},"b")]:[T.jsx("path",{d:"M2 8s2.2-4 6-4 6 4 6 4-2.2 4-6 4-6-4-6-4z"},"a"),T.jsx("circle",{cx:8,cy:8,r:1.8},"b")]})})]})})]}),
-    T.jsx("div",{className:"ls-foot",children:"Seret untuk ubah urutan · klik 2× ganti nama"})]})}
+    T.jsx("div",{className:"ls-foot",children:"Seret untuk ubah urutan · klik 2× ganti nama"})]})]})}
 
 /* ===== EditSeru patch: chip Susun (arrange) ===== */
 const $ARR=[
