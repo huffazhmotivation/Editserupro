@@ -180,3 +180,19 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter
 }
 
 @media (min-width:768px) and (max-width:1199px){.panel-foot{padding-bottom:96px}}
+
+@media (max-width:1100px){.seru-h1100{display:none}}
+
+/* v6: HP */
+.seru-bgfab{display:none}
+html:not(.tablet) body{bottom:0;height:auto}
+html:not(.tablet) #root{position:absolute;top:0;right:0;bottom:0;left:0;height:auto}
+html{background:rgb(var(--c-app))}
+@media (max-width:767px){
+  .ls-layers-tab{position:fixed!important;left:0!important;top:calc(var(--seru-top,104px) + 8px)!important}
+  .seru-bgfab{display:flex;position:fixed;right:10px;top:calc(var(--seru-top,104px) + 8px);z-index:22;align-items:center;gap:2px;padding:3px;border:1px solid rgb(var(--c-border));border-radius:12px;background:rgb(var(--c-panel));box-shadow:0 2px 10px rgb(0 0 0/.12)}
+  .ls-foot{padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
+}
+
+.seru-exp{max-height:calc(100dvh - 64px);overflow-y:auto}
+.seru-exp{background:rgb(var(--c-panel))}
