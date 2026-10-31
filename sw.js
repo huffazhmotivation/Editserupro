@@ -2,26 +2,26 @@
    - Cangkang aplikasi (HTML/JS/CSS) disimpan saat dipasang → aplikasi terbuka tanpa internet.
    - Mesin & model AI (/ai/) disimpan begitu dipakai (dan disiapkan diam-diam saat senggang) → fitur AI jalan offline.
    - Hanya permintaan same-origin yang ditangani; unduhan model dari luar dikelola aplikasi sendiri. */
-const VERSION = "bar17";
+const VERSION = "bar18";
 const SHELL = 'editseru-shell-' + VERSION;
 const RUNTIME = 'editseru-runtime-v1';
 const PRECACHE = [
   "./",
   "./THIRD_PARTY_NOTICES.txt",
-  "./assets/FxPanels-CNQsYs9Bx17.js",
-  "./assets/ImageAI-gg6xUWkx17.js",
-  "./assets/PatternPanel-DaXImZ37x17.js",
-  "./assets/RasterPanel-DUkDiDvwx17.js",
+  "./assets/FxPanels-CNQsYs9Bx18.js",
+  "./assets/ImageAI-gg6xUWkx18.js",
+  "./assets/PatternPanel-DaXImZ37x18.js",
+  "./assets/RasterPanel-DUkDiDvwx18.js",
   "./assets/UTIF-BNj2SwFb.js",
   "./assets/imagefx.worker-Dj7lAgTH.js",
-  "./assets/index-bar17.js",
-  "./assets/index-bar17.css",
-  "./assets/index-sL2J13RHx17.js",
+  "./assets/index-bar18.js",
+  "./assets/index-bar18.css",
+  "./assets/index-sL2J13RHx18.js",
   "./assets/instrument-sans-latin-wdth-normal-BVScPF0l.woff2",
   "./assets/jetbrains-mono-latin-wght-normal-B9CIFXIH.woff2",
-  "./assets/lucide-DGXfS6CAx17.js",
-  "./assets/overlay-CXkzHasax17.js",
-  "./assets/samtablet-DbSOjpkrx17.js",
+  "./assets/lucide-DGXfS6CAx18.js",
+  "./assets/overlay-CXkzHasax18.js",
+  "./assets/samtablet-DbSOjpkrx18.js",
   "./assets/vendor-paper-BshgD9E9.js",
   "./assets/vendor-react-CzRc2eCF.js",
   "./assets/vendor-ui-icons-C9aSDbGf.js",
